@@ -1,0 +1,1 @@
+black_list = ['/dev/nvme0n1p5', '']
