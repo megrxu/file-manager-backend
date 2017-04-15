@@ -2,6 +2,7 @@ from django.db import models
 
 # Create your models here.
 
+
 class Disk(models.Model):
     disk_device = models.CharField(max_length=100)
     disk_id = models.IntegerField(default=0)

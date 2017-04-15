@@ -18,7 +18,7 @@ def index(request):
         result = []
         for disk in disk_list:
             result.append({
-                'id': disk.disk_id,
+                'id': disk.pk,
                 'device': disk.disk_device,
                 'mount point': disk.disk_mountpoint,
                 'mounted': disk.disk_mounted,
