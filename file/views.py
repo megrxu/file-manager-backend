@@ -1,8 +1,5 @@
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
-from os.path import isfile
-
-from file.models import DeletedFile
 
 from file import fileop
 
@@ -29,6 +26,13 @@ def index(request):
         elif action == 'edit':
             content_str = request.POST.get('content')
             response = fileop.edit_file(location_str, content_str)
+
+        elif action == 'move':
+            dst_loc = request.POST.get('dst')
+            response = fileop.move_file(location_str, dst_loc)
+        elif action == 'copy':
+            dst_loc = request.POST.get('dst')
+            response = fileop.copy_file(location_str, dst_loc)
     else:
         response = HttpResponse('No use')
 

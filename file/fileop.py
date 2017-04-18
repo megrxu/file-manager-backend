@@ -1,7 +1,8 @@
 from datetime import datetime
 from os import listdir
-from os.path import isdir, isfile, join, getsize
+from os.path import isdir, isfile, join, getsize, exists
 import json
+import shutil
 
 from django.http import HttpResponse
 
@@ -9,7 +10,9 @@ from file.models import DeletedFile
 
 
 def read_fd(location_str):
-    if isfile(location_str):
+    if not exists(location_str):
+        return HttpResponse('Error')
+    elif isfile(location_str):
         return read_file(location_str)
     elif isdir(location_str):
         return read_dir(location_str)
@@ -83,3 +86,19 @@ def edit_file(location_str, content):
     file_object.close()
 
     return HttpResponse(read_file(location_str))
+
+
+def move_file(src_loc, dst_loc):
+    if exists(src_loc) and exists(dst_loc):
+        shutil.move(src_loc, dst_loc)
+        return HttpResponse('Moved ' + src_loc + ' to ' + dst_loc)
+    else:
+        return HttpResponse('Error')
+
+
+def copy_file(src_loc, dst_loc):
+    if exists(src_loc) and exists(dst_loc):
+        shutil.copy(src_loc, dst_loc)
+        return HttpResponse('Copied ' + src_loc + ' to ' + dst_loc)
+    else:
+        return HttpResponse('Error')
