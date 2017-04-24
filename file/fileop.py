@@ -1,5 +1,5 @@
 from datetime import datetime
-from os import listdir
+from os import listdir, rename, remove
 from os.path import isdir, isfile, join, getsize, exists
 import json
 import shutil
@@ -102,3 +102,8 @@ def copy_file(src_loc, dst_loc):
         return HttpResponse('Copied ' + src_loc + ' to ' + dst_loc)
     else:
         return HttpResponse('Error')
+
+
+def rename_file(location_str, name, new_name):
+    rename(join(location_str, name), join(location_str, new_name))
+    return HttpResponse(read_dir(location_str))

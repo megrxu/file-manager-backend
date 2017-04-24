@@ -33,6 +33,9 @@ def index(request):
         elif action == 'copy':
             dst_loc = request.POST.get('dst')
             response = fileop.copy_file(location_str, dst_loc)
+        elif action == 'rename':
+            file = request.POST.get('dst')
+            response = fileop.rename(location_str, file)
     else:
         response = HttpResponse('No use')
 
