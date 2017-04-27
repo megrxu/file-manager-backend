@@ -21,11 +21,11 @@ def index(request):
             result.append({
                 'id': disk.id,
                 'device': disk.disk_device,
-                'mount point': disk.disk_mountpoint,
+                'mount_point': disk.disk_mountpoint,
                 'size': disk.disk_size,
                 'used_size': disk.disk_usedsize,
                 'percent': disk.disk_percent,
-                'is shown': disk.disk_shown,
+                'is_shown': disk.disk_shown,
             })
 
         # encode the result to json

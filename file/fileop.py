@@ -30,7 +30,7 @@ def read_dir(location_str):
         elif isdir(join(location_str, f)):
             dirs.append({
                 'name': f,
-                'amount': len(listdir(join(location_str, f)))
+                'size': len(listdir(join(location_str, f)))
             })
     response = json.dumps({
         'files': files,
