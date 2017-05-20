@@ -22,7 +22,8 @@ def index(request):
 
         if action == 'delete':
             response = fileop.delete_file(location_str)
-
+        elif action == 'restore':
+            response = fileop.restore_file(location_str)
         elif action == 'edit':
             content_str = request.POST.get('content')
             response = fileop.edit_file(location_str, content_str)

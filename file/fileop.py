@@ -1,6 +1,7 @@
 from datetime import datetime
 from os import listdir, rename, remove
 from os.path import isdir, isfile, join, getsize, exists
+from extra.models import RecentFiles
 import json
 import shutil
 
@@ -19,24 +20,29 @@ def read_fd(location_str):
 
 
 def read_dir(location_str):
-    files = []
-    dirs = []
-    for f in listdir(location_str):
-        if isfile(join(location_str, f)):
-            files.append({
-                'name': f,
-                'size': getsize(join(location_str, f))
-            })
-        elif isdir(join(location_str, f)):
-            dirs.append({
-                'name': f,
-                'size': len(listdir(join(location_str, f)))
-            })
-    response = json.dumps({
-        'files': files,
-        'dirs': dirs,
-    })
-
+    trash = []
+    for item in DeletedFile.objects.all():
+        trash.append(item.filename)
+    if location_str == '/':
+        response = []
+    else:
+        files = []
+        dirs = []
+        for f in listdir(location_str):
+            if isfile(join(location_str, f)):
+                files.append({
+                    'name': f,
+                    'size': getsize(join(location_str, f))
+                })
+            elif isdir(join(location_str, f)):
+                dirs.append({
+                    'name': f,
+                    'size': len(listdir(join(location_str, f)))
+                })
+        response = json.dumps({
+            'files': files,
+            'dirs': dirs,
+        })
     return HttpResponse(response)
 
 
@@ -58,6 +64,9 @@ def read_file(location_str):
             'content': content
         })
 
+        one_file = RecentFiles(filename=location_str, date=datetime.now())
+        one_file.save()
+
     return HttpResponse(response)
 
 
@@ -65,9 +74,6 @@ def delete_file(location_str):
     trash = []
     for item in DeletedFile.objects.all():
         trash.append(item.filename)
-    #
-    # for item in  DeletedFile.objects.all():
-    #     item.delete()
 
     if isfile(location_str) or isdir(location_str):
         if location_str not in trash:
@@ -78,6 +84,23 @@ def delete_file(location_str):
             return HttpResponse('Already deleted ' + location_str)
     else:
         return HttpResponse('No use')
+
+
+def restore_file(location_str):
+    trash = []
+    print(location_str)
+
+    if isfile(location_str) or isdir(location_str):
+        for item in DeletedFile.objects.all():
+            trash.append(item.filename)
+            if (item.filename == location_str):
+                item.delete()
+                return HttpResponse('Restored ' + location_str)
+    return HttpResponse('No use')
+
+
+def remove_file(location_str):
+    return HttpResponse(remove(location_str))
 
 
 def edit_file(location_str, content):
