@@ -1,6 +1,6 @@
 # File-Manager-Backend
 A python-based filemanager which could support internet access for local files.
-可提供本地文件的互联网访问，基于python-django。
+
 
 ## Features
 
