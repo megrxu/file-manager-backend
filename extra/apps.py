@@ -11,7 +11,9 @@ def manage(request):
         action = request.GET.get('action')
         if (action == 'recentfiles'):
             return getRecentFiles()
+        else:
+            return HttpResponse('index')
 
 
 def getRecentFiles():
-    return HttpResponse('wadw')
+    return HttpResponse('getRecentFiles')

@@ -1,4 +1,6 @@
 from django.http import HttpResponse
+from django.views.decorators.csrf import csrf_exempt
+
 from disk.models import Disk
 import json
 import psutil
@@ -6,8 +8,10 @@ from django.contrib.auth.decorators import login_required
 from disk.blacklist import black_list
 
 
-#@login_required
 # Create your views here.
+
+@login_required
+@csrf_exempt
 def index(request):
 
     if request.method == 'GET':

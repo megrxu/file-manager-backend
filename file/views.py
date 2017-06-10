@@ -1,14 +1,13 @@
+from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
-
 from file import fileop
 
 
-# Create your views here.
-
-
+# @login_required
 @csrf_exempt
 def index(request):
+    response = ''
     if request.method == 'GET':
         location_str = request.GET.get('location')
         response = fileop.read_fd(location_str)
