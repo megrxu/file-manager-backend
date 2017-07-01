@@ -1,11 +1,11 @@
 from datetime import datetime
 from os import listdir, rename, remove
 from os.path import isdir, isfile, join, getsize, exists
-from extra.models import RecentFiles
-import json
-import shutil
 
-from django.http import HttpResponse
+from extra.models import RecentFiles
+import shutil
+import magic
+from django.http import HttpResponse, JsonResponse, FileResponse
 
 from file.models import DeletedFile
 
@@ -39,11 +39,11 @@ def read_dir(location_str):
                     'name': f,
                     'size': len(listdir(join(location_str, f)))
                 })
-        response = json.dumps({
+        response = JsonResponse({
             'files': files,
             'dirs': dirs,
         })
-    return HttpResponse(response)
+    return response
 
 
 def read_file(location_str):
@@ -58,16 +58,17 @@ def read_file(location_str):
             content = file_object.read()
         finally:
             file_object.close()
-        response = json.dumps({
+        response = JsonResponse({
             'file': location_str,
             'size': getsize(location_str),
-            'content': content
+            'content': content,
+            'type': 'default'
         })
 
         one_file = RecentFiles(filename=location_str, date=datetime.now())
         one_file.save()
 
-    return HttpResponse(response)
+    return response
 
 
 def delete_file(location_str):
@@ -130,3 +131,20 @@ def copy_file(src_loc, dst_loc):
 def rename_file(location_str, name, new_name):
     rename(join(location_str, name), join(location_str, new_name))
     return HttpResponse(read_dir(location_str))
+
+
+# File download and view
+
+def file_view(location_str):
+    mime = magic.open(magic.MAGIC_MIME)
+    mime.load()
+    response = FileResponse(open(location_str, 'rb'), content_type=mime.file(location_str))
+    return response
+
+
+def file_download(location_str):
+    mime = magic.open(magic.MAGIC_MIME)
+    mime.load()
+    response = FileResponse(open(location_str, 'rb'), content_type=mime.file(location_str))
+    # response['content_type'] = 'force-download'
+    return response

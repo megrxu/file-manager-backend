@@ -1,1 +1,1 @@
-black_list = ['/dev/nvme0n1p5', '']
+black_list = ['/dev/nvme0n1p5', '/dev/nvme0n1p1']

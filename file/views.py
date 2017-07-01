@@ -10,7 +10,13 @@ def index(request):
     response = ''
     if request.method == 'GET':
         location_str = request.GET.get('location')
-        response = fileop.read_fd(location_str)
+        action = request.GET.get('action')
+        if (action == 'download'):
+            response = fileop.file_download(location_str)
+        elif (action == 'view'):
+            response = fileop.file_view(location_str)
+        else:
+            response = fileop.read_fd(location_str)
 
     elif request.method == 'POST':
         location_str = request.POST.get('location')
@@ -26,7 +32,6 @@ def index(request):
         elif action == 'edit':
             content_str = request.POST.get('content')
             response = fileop.edit_file(location_str, content_str)
-
         elif action == 'move':
             dst_loc = request.POST.get('dst')
             response = fileop.move_file(location_str, dst_loc)

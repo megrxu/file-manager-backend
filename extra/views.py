@@ -1,21 +1,16 @@
-from django.contrib.auth.decorators import login_required
+# from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
-from django.http import HttpResponse
-from . import apps
+from extra.models import RecentFiles
 from django.contrib.auth import authenticate, login
 import json
-
-
-
-# from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 
 
 # Create your views here.
 @csrf_exempt
 # @login_required
 def index(request):
-    response = apps.manage(request)
-
+    response = manage(request)
     return response
 
 
@@ -40,3 +35,23 @@ def login_request(request):
         })
     result = json.dumps(result)
     return HttpResponse(result)
+
+def manage(request):
+    if request.method == 'GET':
+        action = request.GET.get('action')
+        if (action == 'recentfiles'):
+            return getRecentFiles()
+        else:
+            return HttpResponse('index')
+
+def getRecentFiles():
+    file_list = RecentFiles.objects.all()
+    result = []
+    for file in file_list:
+        result.append({
+            'filename': file.filename,
+            'date': file.date
+        })
+    result = JsonResponse(result)
+
+    return result
