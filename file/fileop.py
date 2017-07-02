@@ -133,14 +133,7 @@ def rename_file(location_str, name, new_name):
 def file_view(location_str):
     mime = magic.open(magic.MAGIC_MIME)
     mime.load()
-    if (mime.file(location_str).split('/')[0] == 'image'):
-        with open(location_str, "rb") as f:
-            data = f.read()
-            f.close()
-            str = base64.b64encode(data)
-        response = HttpResponse(str)
-    else:
-        response = FileResponse(open(location_str, 'rb'), content_type=mime.file(location_str))
+    response = FileResponse(open(location_str, 'rb'), content_type=mime.file(location_str))
     return response
 
 
