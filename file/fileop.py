@@ -66,6 +66,9 @@ def read_file(location_str):
         })
 
         one_file = RecentFiles(filename=location_str, date=datetime.now())
+        for file in RecentFiles.objects.all():
+            if (file.filename == one_file.filename):
+                file.delete()
         one_file.save()
 
     return response
@@ -145,6 +148,5 @@ def file_view(location_str):
 def file_download(location_str):
     mime = magic.open(magic.MAGIC_MIME)
     mime.load()
-    response = FileResponse(open(location_str, 'rb'), content_type=mime.file(location_str))
-    # response['content_type'] = 'force-download'
+    response = FileResponse(open(location_str, 'rb'), content_type='force-download')
     return response

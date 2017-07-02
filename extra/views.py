@@ -4,6 +4,7 @@ from extra.models import RecentFiles
 from django.contrib.auth import authenticate, login
 import json
 from django.http import HttpResponse, JsonResponse
+import psutil
 
 
 # Create your views here.
@@ -36,13 +37,17 @@ def login_request(request):
     result = json.dumps(result)
     return HttpResponse(result)
 
+
 def manage(request):
     if request.method == 'GET':
         action = request.GET.get('action')
         if (action == 'recentfiles'):
             return getRecentFiles()
+        elif (action == 'system'):
+            return getSystemStatus()
         else:
             return HttpResponse('index')
+
 
 def getRecentFiles():
     file_list = RecentFiles.objects.all()
@@ -52,6 +57,15 @@ def getRecentFiles():
             'filename': file.filename,
             'date': file.date
         })
-    result = JsonResponse(result)
+    result = json.dumps(result)
 
-    return result
+    return HttpResponse(result)
+
+
+def getSystemStatus():
+    result = {
+        'cpu': psutil.cpu_percent(),
+        'ram': psutil.virtual_memory().percent
+    }
+
+    return JsonResponse(result)
