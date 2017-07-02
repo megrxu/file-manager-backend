@@ -9,8 +9,6 @@ from django.http import HttpResponse, JsonResponse, FileResponse
 
 from file.models import DeletedFile
 
-import base64
-
 
 def read_fd(location_str):
     if not exists(location_str):
@@ -31,16 +29,17 @@ def read_dir(location_str):
         files = []
         dirs = []
         for f in listdir(location_str):
-            if isfile(join(location_str, f)):
-                files.append({
-                    'name': f,
-                    'size': getsize(join(location_str, f))
-                })
-            elif isdir(join(location_str, f)):
-                dirs.append({
-                    'name': f,
-                    'size': len(listdir(join(location_str, f)))
-                })
+            if join(location_str, f) not in trash:
+                if isfile(join(location_str, f)):
+                    files.append({
+                        'name': f,
+                        'size': getsize(join(location_str, f))
+                    })
+                elif isdir(join(location_str, f)):
+                    dirs.append({
+                        'name': f,
+                        'size': len(listdir(join(location_str, f)))
+                    })
         response = JsonResponse({
             'files': files,
             'dirs': dirs,
