@@ -47,29 +47,19 @@ def read_dir(location_str):
 
 
 def read_file(location_str):
-    location_str_lower = location_str.lower()
+    mime = magic.open(magic.MAGIC_MIME)
+    mime.load()
+    response = JsonResponse({
+        'file': location_str,
+        'size': getsize(location_str),
+        'type': mime.file(location_str).split(';')[0]
+    })
 
-    if location_str_lower.endswith('.png') | location_str_lower.endswith('.jpg') | location_str_lower.endswith('.jpeg'):
-        image_data = open(location_str, "rb").read()
-        return HttpResponse(image_data, content_type="image")
-    else:
-        file_object = open(location_str)
-        try:
-            content = file_object.read()
-        finally:
-            file_object.close()
-        response = JsonResponse({
-            'file': location_str,
-            'size': getsize(location_str),
-            'content': content,
-            'type': 'default'
-        })
-
-        one_file = RecentFiles(filename=location_str, date=datetime.now())
-        for file in RecentFiles.objects.all():
-            if (file.filename == one_file.filename):
-                file.delete()
-        one_file.save()
+    one_file = RecentFiles(filename=location_str, date=datetime.now())
+    for file in RecentFiles.objects.all():
+        if (file.filename == one_file.filename):
+            file.delete()
+    one_file.save()
 
     return response
 
