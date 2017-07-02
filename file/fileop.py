@@ -9,6 +9,8 @@ from django.http import HttpResponse, JsonResponse, FileResponse
 
 from file.models import DeletedFile
 
+import base64
+
 
 def read_fd(location_str):
     if not exists(location_str):
@@ -131,7 +133,14 @@ def rename_file(location_str, name, new_name):
 def file_view(location_str):
     mime = magic.open(magic.MAGIC_MIME)
     mime.load()
-    response = FileResponse(open(location_str, 'rb'), content_type=mime.file(location_str))
+    if (mime.file(location_str).split('/')[0] == 'image'):
+        with open(location_str, "rb") as f:
+            data = f.read()
+            f.close()
+            str = base64.b64encode(data)
+        response = HttpResponse(str)
+    else:
+        response = FileResponse(open(location_str, 'rb'), content_type=mime.file(location_str))
     return response
 
 
